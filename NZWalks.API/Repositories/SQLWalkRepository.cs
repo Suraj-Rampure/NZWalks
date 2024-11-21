@@ -7,6 +7,7 @@ namespace NZWalks.API.Repositories
     public class SQLWalkRepository : IWalkRepository
     {
         private readonly NZWalksDbContext dbContext;
+        private object stringComparison;
 
         public SQLWalkRepository(NZWalksDbContext dbContext)
         {
@@ -35,9 +36,22 @@ namespace NZWalks.API.Repositories
 
         }
 
-        public async Task<List<Walk>> GetAllAsync()
+        public async Task<List<Walk>> GetAllAsync(string? filterOn = null, string? filterQuery = null)
         {
-           return await dbContext.Walks.Include("Difficulty").Include("Region").ToListAsync();
+
+            var walks = dbContext.Walks.Include("Difficulty").Include("Region").AsQueryable();
+
+            //Filtering
+            if(string.IsNullOrWhiteSpace(filterOn) == false && string.IsNullOrWhiteSpace(filterQuery) == false)
+            {
+                if(filterOn.Equals("name", StringComparison.OrdinalIgnoreCase))
+                {
+                    walks = walks.Where(x => x.Name.Contains(filterQuery));
+                }
+            }
+            return await walks.ToListAsync();
+
+          // return await dbContext.Walks.Include("Difficulty").Include("Region").ToListAsync();
 
         }
 
