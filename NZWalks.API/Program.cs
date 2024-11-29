@@ -27,11 +27,17 @@ options.UseSqlServer(builder.Configuration.GetConnectionString("NZWalkAuthConnec
 builder.Services.AddScoped<IRegionRepository, SQLRegionRepository>();
 builder.Services.AddScoped<IWalkRepository, SQLWalkRepository>();
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
+builder.Services.AddScoped<ITokenRepository, TokenRepository>();
+
 builder.Services.AddIdentityCore<IdentityUser>()
     .AddRoles<IdentityRole>()
     .AddTokenProvider<DataProtectorTokenProvider<IdentityUser>>("NZWalks")
     .AddEntityFrameworkStores<NZWalksAuthDbContext>()
     .AddDefaultTokenProviders();
+
+
+
+
 
 builder.Services.Configure<IdentityOptions>(options =>
 {
